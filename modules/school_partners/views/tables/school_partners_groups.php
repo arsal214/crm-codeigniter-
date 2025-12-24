@@ -1,0 +1,44 @@
+<?php
+
+defined('BASEPATH') or exit('No direct script access allowed');
+
+$aColumns = ['name','type'];
+
+$sIndexColumn = 'id';
+$sTable       = db_prefix() . 'school_partners_groups';
+
+$result  = data_tables_init($aColumns, $sIndexColumn, $sTable, [], [], ['id']);
+$output  = $result['output'];
+$rResult = $result['rResult'];
+
+foreach ($rResult as $aRow) {
+    if(isset($_GET['gtype'])){
+        if($aRow['type'] == null){
+            continue;
+        }
+    }
+    $row = [];
+    for ($i = 0; $i < count($aColumns) ; $i++) {
+        if ($i==1)
+            continue;
+        $_data = '<a href="#" data-toggle="modal" data-target="#customer_group_modal" data-id="' . $aRow['id'] . '">' . $aRow[$aColumns[$i]] . '</a>';
+
+        $row[] = $_data;
+    }
+    $options = '<div class="tw-flex tw-items-center tw-space-x-3">';
+    $options .= '<a href="#" class="tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700" data-toggle="modal" data-target="#customer_group_modal" data-id="' . $aRow['id'] . '">
+        <i class="fa-regular fa-pen-to-square fa-lg"></i>
+    </a>';
+
+        $options .= '<a href="' . admin_url('school_partners/delete_group/' . $aRow['id']).(isset($_GET['gtype']) ? '?gtype=spg' : '').'"
+    class="tw-mt-px tw-text-neutral-500 hover:tw-text-neutral-700 focus:tw-text-neutral-700 _delete">
+        <i class="fa-regular fa-trash-can fa-lg"></i>
+    </a>';
+    $options .= '</div>';
+
+    $row[] = $options;
+
+    $output['aaData'][] = $row;
+
+
+}
