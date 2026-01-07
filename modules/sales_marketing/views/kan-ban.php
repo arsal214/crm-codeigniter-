@@ -38,10 +38,10 @@ foreach ($stages as $stage) {
                         data-name="<?php echo $stage->stage_name; ?>"
                     <?php } ?>><?php echo $stage->stage_name; ?>
                 </span>
-                    <?php echo app_format_money(
+                    <span class="kanban-total-value"><?php echo app_format_money(
                         $total_value,
                         $base_currency
-                    ); ?> - <small><?php echo $total_deals . ' ' . _l('deals'); ?></small>
+                    ); ?></span> - <small><span class="kanban-total-deals"><?php echo $total_deals; ?></span> <?php echo _l('deals'); ?></small>
 
                 </div>
                 <div class="kan-ban-content-wrapper">

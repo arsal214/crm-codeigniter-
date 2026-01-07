@@ -364,7 +364,7 @@
 <?php init_tail(); ?>
 <script>
 
-    deals_kanban();
+    deals_kanban_sort('dealorder');
 
     function deals_kanban_sort(type) {
         kan_ban_sort(type, deals_kanban);

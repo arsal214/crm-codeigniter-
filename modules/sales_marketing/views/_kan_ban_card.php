@@ -1,6 +1,7 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 if ($deal['stage_id'] == $stage->stage_id) { ?>
     <li data-lead-id="<?php echo $deal['id']; ?>"
+        data-deal-value="<?php echo $deal['deal_value']; ?>"
         class="lead-kan-ban<?php if ($deal['default_deal_owner'] == get_staff_user_id()) {
             echo ' current-user-lead';
         } ?>">

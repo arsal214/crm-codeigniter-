@@ -86,22 +86,39 @@ class Sales_marketing extends AdminController
 
         $status = $this->input->get('status');
         $page = $this->input->get('page');
+        $pipeline_id = $this->input->get('pipeline_id');
 
         $this->db->where('stage_id', $status);
-        $status = $this->db->get('tbl_sam_stages')->row_array();
+        $stage = $this->db->get('tbl_sam_stages')->row();  // Changed to row() to get object instead of array
 
-        $leads = (new  \modules\sales_marketing\libraries\DealsKanban($status['stage_id']))
+        if (!$stage) {
+            // Stage not found
+            return;
+        }
+
+        $kanban = (new  \modules\sales_marketing\libraries\DealsKanban($stage->stage_id))
             ->search($this->input->get('search'))
             ->sortBy(
                 $this->input->get('sort_by'),
                 $this->input->get('sort')
             )
-            ->page($page)->get();
+            ->page($page);
+
+        // Filter by pipeline_id if provided
+        if (!empty($pipeline_id)) {
+            $kanban->tapQuery(function($statusId, $ci) use ($pipeline_id) {
+                $ci->db->where(db_prefix() . '_sam.pipeline_id', $pipeline_id);
+            });
+        }
+
+        $leads = $kanban->get();
+        $data['base_currency'] = get_base_currency();
 
         foreach ($leads as $lead) {
             $this->load->view('_kan_ban_card', [
                 'deal' => $lead,
-                'stage' => $status,
+                'stage' => $stage,  // Now passing object instead of array
+                'base_currency' => $data['base_currency']  // Adding missing base_currency
             ]);
         }
     }

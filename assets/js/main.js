@@ -4231,14 +4231,15 @@ function fix_kanban_height(col_px, container_px) {
 
 // Kanban load more
 function kanban_load_more(status_id, e, url, column_px, container_px) {
+  console.log('file loaded');
   var LoadMoreParameters = [];
   var search = $('input[name="search"]').val();
   var _kanban_param_val;
-  var page = $(e).attr("data-page");
+  var page = parseInt($(e).attr("data-page"));
   var $column = $('[data-col-status-id="' + status_id + '"]');
-  var total_pages = $column.data("total-pages");
+  var total_pages = parseInt($column.data("total-pages"));
 
-  if (page <= total_pages) {
+  if (page < total_pages) {
     var sort_type = $('input[name="sort_type"]');
     var sort = $('input[name="sort"]').val();
     if (sort_type.length != 0 && sort_type.val() !== "") {
@@ -4269,21 +4270,38 @@ function kanban_load_more(status_id, e, url, column_px, container_px) {
       .done(function (response) {
         page++;
         $('[data-load-status="' + status_id + '"]').before(response);
-        $('[data-col-status-id="' + status_id + '"]').attr(
-          "data-total",
-          parseInt(
-            $('[data-col-status-id="' + status_id + '"]').attr("data-total")
-          ) + $("<ul></ul>").append(response).find("li").length
-        );
+
+        // Calculate new totals
+        var $columnContainer = $('[data-col-status-id="' + status_id + '"]');
+        var $allDeals = $columnContainer.find('.leads-status .lead-kan-ban');
+        var newDealCount = $allDeals.length;
+        var newTotalValue = 0;
+
+        // Sum all deal values
+        $allDeals.each(function() {
+          var dealValue = parseFloat($(this).attr('data-deal-value')) || 0;
+          newTotalValue += dealValue;
+        });
+
+        // Update data-total attribute
+        $columnContainer.attr("data-total", newDealCount);
+
+        // Update the panel heading with new count and formatted value
+        var $heading = $columnContainer.find('.panel-heading');
+        $heading.find('.kanban-total-deals').text(newDealCount);
+        $heading.find('.kanban-total-value').text(format_money(newTotalValue));
+
         $(e).attr("data-page", page);
         fix_kanban_height(column_px, container_px);
+
+        // Disable button if we've reached the last page
+        if (page >= total_pages) {
+          $(e).addClass("disabled");
+        }
       })
       .fail(function (error) {
         alert_float("danger", error.responseText);
       });
-    if (page >= total_pages - 1) {
-      $(e).addClass("disabled");
-    }
   }
 }
 
