@@ -1294,6 +1294,12 @@ public function get_kpi_count() {
                 if (!empty($tags)) {
                     handle_tags_save($tags, $return_id, 'sam');
                 }
+
+                // Log activity transaction for lead creation
+                if (empty($id)) {
+                    add_activity_transactions($return_id, 'created lead');
+                }
+
                 if (!empty($notifyUser)) {
                     foreach ($notifyUser as $v_user) {
                         if (!empty($v_user)) {
@@ -1935,11 +1941,25 @@ public function get_kpi_count() {
                     // send update
                     $this->notify_assigned_tasks($assigned_to['assigned_to'], $id, true);
                 }
+
+                // Log activity transaction for task update
+                if (!empty($data['module_field_id']) && $data['module'] == 'sales_marketing') {
+                    if ($data['task_status'] == 'completed' || $data['task_progress'] == 100) {
+                        add_activity_transactions($data['module_field_id'], 'completed task');
+                    } else {
+                        add_activity_transactions($data['module_field_id'], 'updated task');
+                    }
+                }
             } else {
                 $msg = _l('save_task');
                 $activity = 'activity_new_task';
                 if (!empty($assigned_to['assigned_to'])) {
                     $this->notify_assigned_tasks($assigned_to['assigned_to'], $id);
+                }
+
+                // Log activity transaction for task creation
+                if (!empty($data['module_field_id']) && $data['module'] == 'sales_marketing') {
+                    add_activity_transactions($data['module_field_id'], 'created task');
                 }
             }
 

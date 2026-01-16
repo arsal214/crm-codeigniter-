@@ -75,7 +75,7 @@ class Clients extends AdminController
 }
 
     
-    function addContact($client_id=0)
+    function addContact($client_id=0, $sam_id=0)
     {
         $this->load->model('sam_model');
         //print_r($this->input->post());exit;
@@ -87,8 +87,9 @@ class Clients extends AdminController
         if($client_res && isset($client_res[0])){
             $client_res = $client_res[0];
             $data['client_res'] = $client_res;
-            echo $this->load->view(SAM_MODULE.'/add_contact', $data);    
-        }    
+            $data['sam_id'] = $sam_id;
+            echo $this->load->view(SAM_MODULE.'/add_contact', $data);
+        }
     }
     
     function save_contact($customer_id)
@@ -114,6 +115,8 @@ class Clients extends AdminController
 
         unset($data['contactid']); 
         
+        $sam_id = $this->input->post('sam_id');
+
         $id      = $this->clients_model->add_contact($data, $customer_id);
         $message = '';
         $success = false;
@@ -121,6 +124,11 @@ class Clients extends AdminController
             handle_contact_profile_image_upload($id);
             $success = true;
             $message = _l('added_successfully', _l('contact'));
+
+            // Log activity transaction if contact is added from a lead
+            if (!empty($sam_id) && $sam_id > 0) {
+                add_activity_transactions($sam_id, 'added contact');
+            }
         }
         echo json_encode([
             'success'           => $success,

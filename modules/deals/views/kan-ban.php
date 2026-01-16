@@ -11,7 +11,7 @@ foreach ($stages as $stage) {
     }
     $deals = $kanBan->get();
     $total_value = array_sum(array_column($deals, 'deal_value'));
-    $total_deals = count($deals);
+    $total_deals = $kanBan->countAll();
     $total_pages = $kanBan->totalPages();
 
     $settings = '';

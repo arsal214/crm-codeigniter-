@@ -1032,31 +1032,22 @@ function add_activity_transactions($sam_id=0,$transaction_type=''){
         $cond = array(
             'id'    => $sam_id
         );
-        $sam_res = $CI->sam_model->getOneRecord("tbl_sam",$cond); 
+        $sam_res = $CI->sam_model->getOneRecord("tbl_sam",$cond);
         if($sam_res){
             $sam_res = $sam_res[0];
-            //first check the transaction done for same day
-            $cond = array(
+            // Insert transaction for each activity (removed duplicate check)
+            $transaction_data = array(
                 'sam_id'        => $sam_id,
-                'staff_id'      => $staff_id,
+                'pipeline_id'   => $sam_res['pipeline_id'],
+                'stage_id'      => $sam_res['stage_id'],
+                'rel_type'      => $sam_res['rel_type'],
                 'customer_id'   => $sam_res['rel_id'],
-                't_date'        => date('Y-m-d')
+                'staff_id'      => $staff_id,
+                'transaction_type' => $transaction_type,
+                't_date'        => date("Y-m-d"),
+                'reg_date'      => date("Y-m-d h:i:s")
             );
-            $record = $CI->sam_model->getOneRecord("tbl_sam_transactions",$cond);
-            if(!$record){
-                $transaction_data = array(
-                    'sam_id'        => $sam_id,
-                    'pipeline_id'   => $sam_res['pipeline_id'],
-                    'stage_id'      => $sam_res['stage_id'],
-                    'rel_type'      => $sam_res['rel_type'],
-                    'customer_id'   => $sam_res['rel_id'],
-                    'staff_id'      => $staff_id,
-                    'transaction_type' => $transaction_type,
-                    't_date'        => date("Y-m-d"),
-                    'reg_date'      => date("Y-m-d h:i:s")
-                );
-                $CI->sam_model->add_activity_transaction($transaction_data);     
-            }   
+            $CI->sam_model->add_activity_transaction($transaction_data);   
         }
         
     }

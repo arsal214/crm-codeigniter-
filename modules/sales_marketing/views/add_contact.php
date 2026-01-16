@@ -1,5 +1,6 @@
-<form action="<?=admin_url(SAM_MODULE.'/clients/save_contact/'.$client_res['userid'])?>" id="contact-form" autocomplete="off" method="post" enctype="multipart/form-data" accept-charset="utf-8" novalidate="novalidate">                                                                                                               
+<form action="<?=admin_url(SAM_MODULE.'/clients/save_contact/'.$client_res['userid'])?>" id="contact-form" autocomplete="off" method="post" enctype="multipart/form-data" accept-charset="utf-8" novalidate="novalidate">
     <input type="hidden" class="" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+    <input type="hidden" name="sam_id" value="<?= isset($sam_id) ? $sam_id : 0 ?>">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
         <div class="tw-flex">

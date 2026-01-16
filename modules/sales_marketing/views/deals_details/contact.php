@@ -2,7 +2,7 @@
 $edited = has_permission('sam', '', 'edit');
 ?>
 <div class="input-group-btn">
-    <a href="<?= admin_url(SAM_MODULE.'/clients/addContact/'.$deals_details->customers['id']) ?>" id="add_contact_link" data-toggle="modal" data-target="#myModal">
+    <a href="<?= admin_url(SAM_MODULE.'/clients/addContact/'.$deals_details->customers['id'].'/'.$deals_details->id) ?>" id="add_contact_link" data-toggle="modal" data-target="#myModal">
         <i class="btn btn-primary">+ New Contact</i>
     </a>
 </div>
